@@ -1,3 +1,3 @@
-module github/wantainc/microcms-go-sdk
+module github.com/wantainc/microcms-go-sdk
 
 go 1.14
