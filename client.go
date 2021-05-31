@@ -16,6 +16,12 @@ type Client struct {
 
 type ClientParams func(*Client)
 
+type Params struct {
+	contentId string
+}
+
+type RequestParams func(*Params)
+
 func CreateClient(serviceDomain, apiKey string, params ...ClientParams) *Client {
 	c := &Client{
 		serviceDomain:  serviceDomain,
@@ -28,8 +34,8 @@ func CreateClient(serviceDomain, apiKey string, params ...ClientParams) *Client 
 	return c
 }
 
-func (c *Client) makeRequest(method, endpoint string) (*http.Request, error) {
-	url := createUrl(c.serviceDomain, endpoint)
+func (c *Client) makeRequest(method, endpoint, contentId string) (*http.Request, error) {
+	url := createUrl(c.serviceDomain, endpoint, contentId)
 
 	req, err := http.NewRequest(GET, url, nil)
 	if err != nil {
@@ -45,13 +51,22 @@ func (c *Client) makeRequest(method, endpoint string) (*http.Request, error) {
 	return req, nil
 }
 
-func (c *Client) Get(endpoint string) (*http.Response, error) {
-	req, err := c.makeRequest(GET, endpoint)
+func (c *Client) Get(endpoint string, params ...RequestParams) (*http.Response, error) {
+	p := &Params{
+		contentId: "",
+	}
+
+	for _, params := range params {
+		params(p)
+	}
+
+	req, err := c.makeRequest(GET, endpoint, p.contentId)
 	res, _ := http.DefaultClient.Do(req)
 
 	if err != nil {
 		return nil, err
 	}
+	defer res.Body.Close()
 
 	return res, err
 }
@@ -62,8 +77,18 @@ func GlobalDraftKey(v string) ClientParams {
 	}
 }
 
-func createUrl(serviceDomain, endpoint string) string {
-	url := fmt.Sprintf("https://%s.%s/api/%s/%s", serviceDomain, BASE_DOMAIN, API_VERSION, endpoint)
+func createUrl(serviceDomain, endpoint, contentId string) string {
+	base := fmt.Sprintf("https://%s.%s/api/%s/%s", serviceDomain, BASE_DOMAIN, API_VERSION, endpoint)
+	if contentId != "" {
+		base := fmt.Sprintf("%s/%s", base, contentId)
+		return base
+	}
 
-	return url
+	return base
+}
+
+func ContentId(v string) RequestParams {
+	return func(p *Params) {
+		p.contentId = v
+	}
 }
