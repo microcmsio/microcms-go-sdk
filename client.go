@@ -2,7 +2,6 @@ package microcms
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -29,7 +28,7 @@ func CreateClient(serviceDomain, apiKey string, params ...ClientParams) *Client 
 	return c
 }
 
-func (c *Client) makeRequest(method, endpoint string) ([]byte, error) {
+func (c *Client) makeRequest(method, endpoint string) (*http.Request, error) {
 	url := createUrl(c.serviceDomain, endpoint)
 
 	req, err := http.NewRequest(GET, url, nil)
@@ -43,26 +42,28 @@ func (c *Client) makeRequest(method, endpoint string) ([]byte, error) {
 		req.Header.Set("X-GLOBAL-DRAFT-KEY", c.globalDraftKey)
 	}
 
+	return req, nil
+}
+
+func (c *Client) Get(endpoint string) (*http.Response, error) {
+	req, err := c.makeRequest(GET, endpoint)
 	res, _ := http.DefaultClient.Do(req)
 
-	resByte, _ := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
 
-	return resByte, nil
-}
-
-func (c *Client) Get(endpoint string) (string, error) {
-	d, err := c.makeRequest(GET, endpoint)
-	return string(d), err
-}
-
-func createUrl(serviceDomain, endpoint string) string {
-	url := fmt.Sprintf("https://%s.%s/api/%s/%s", serviceDomain, BASE_DOMAIN, API_VERSION, endpoint)
-
-	return url
+	return res, err
 }
 
 func GlobalDraftKey(v string) ClientParams {
 	return func(c *Client) {
 		c.globalDraftKey = v
 	}
+}
+
+func createUrl(serviceDomain, endpoint string) string {
+	url := fmt.Sprintf("https://%s.%s/api/%s/%s", serviceDomain, BASE_DOMAIN, API_VERSION, endpoint)
+
+	return url
 }
