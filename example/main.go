@@ -8,9 +8,8 @@ import (
 func main() {
 	serviceDomain := "YOUR_DOMAIN"
 	apiKey := "YOUR_API_KEY"
-	globalDraftKey := "YOUR_GLOBAL_DRAFT_KEY"
 
-	c := microcms.CreateClient(serviceDomain, apiKey, globalDraftKey)
+	c := microcms.CreateClient(serviceDomain, apiKey)
 	data, _ := c.Get("endpoint")
 
 	fmt.Println(data)

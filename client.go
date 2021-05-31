@@ -15,24 +15,22 @@ type Client struct {
 	globalDraftKey string
 }
 
-func CreateClient(serviceDomain, apiKey, globalDraftKey string) *Client {
+type ClientParams func(*Client)
+
+func CreateClient(serviceDomain, apiKey string, params ...ClientParams) *Client {
 	c := &Client{
 		serviceDomain:  serviceDomain,
 		apiKey:         apiKey,
-		globalDraftKey: globalDraftKey,
+		globalDraftKey: "",
+	}
+	for _, param := range params {
+		param(c)
 	}
 	return c
 }
 
-func createUrl(serviceDomain, endpoint string) string {
-	url := fmt.Sprintf("https://%s.%s/api/%s/%s", serviceDomain, BASE_DOMAIN, API_VERSION, endpoint)
-
-	return url
-}
-
 func (c *Client) makeRequest(method, endpoint string) ([]byte, error) {
 	url := createUrl(c.serviceDomain, endpoint)
-	fmt.Println(url)
 
 	req, err := http.NewRequest(GET, url, nil)
 	if err != nil {
@@ -55,4 +53,16 @@ func (c *Client) makeRequest(method, endpoint string) ([]byte, error) {
 func (c *Client) Get(endpoint string) (string, error) {
 	d, err := c.makeRequest(GET, endpoint)
 	return string(d), err
+}
+
+func createUrl(serviceDomain, endpoint string) string {
+	url := fmt.Sprintf("https://%s.%s/api/%s/%s", serviceDomain, BASE_DOMAIN, API_VERSION, endpoint)
+
+	return url
+}
+
+func GlobalDraftKey(v string) ClientParams {
+	return func(c *Client) {
+		c.globalDraftKey = v
+	}
 }
