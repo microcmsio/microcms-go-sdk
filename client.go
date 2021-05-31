@@ -6,17 +6,6 @@ import (
 	"net/http"
 )
 
-// Base API endpoint
-const (
-	BASE_DOMAIN = "microcms.io"
-	API_VERSION = "v1"
-)
-
-// Support HTTP request
-const (
-	GET = "GET"
-)
-
 type HttpResponse *http.Request
 type HttpRequest *http.Request
 
@@ -26,7 +15,7 @@ type Client struct {
 	globalDraftKey string
 }
 
-func createClient(serviceDomain, apiKey, globalDraftKey string) *Client {
+func CreateClient(serviceDomain, apiKey, globalDraftKey string) *Client {
 	c := &Client{
 		serviceDomain:  serviceDomain,
 		apiKey:         apiKey,

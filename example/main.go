@@ -10,7 +10,7 @@ func main() {
 	apiKey := "YOUR_API_KEY"
 	globalDraftKey := "YOUR_GLOBAL_DRAFT_KEY"
 
-	c := microcms.createClient(serviceDomain, apiKey, globalDraftKey)
+	c := microcms.CreateClient(serviceDomain, apiKey, globalDraftKey)
 	data, _ := c.Get("endpoint")
 
 	fmt.Println(data)
