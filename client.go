@@ -1,6 +1,7 @@
 package microcms
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -51,7 +52,7 @@ func (c *Client) makeRequest(method, endpoint, contentId string) (*http.Request,
 	return req, nil
 }
 
-func (c *Client) Get(endpoint string, params ...RequestParams) (*http.Response, error) {
+func (c *Client) Get(endpoint string, params ...RequestParams) (interface{}, error) {
 	p := &Params{
 		contentId: "",
 	}
@@ -66,9 +67,21 @@ func (c *Client) Get(endpoint string, params ...RequestParams) (*http.Response, 
 	if err != nil {
 		return nil, err
 	}
+
 	defer res.Body.Close()
 
-	return res, err
+	var data interface{}
+	if err := parseBody(res, &data); err != nil {
+		return nil, err
+	}
+
+	return data, err
+}
+
+func parseBody(res *http.Response, v interface{}) error {
+	defer res.Body.Close()
+	decoder := json.NewDecoder(res.Body)
+	return decoder.Decode(v)
 }
 
 func GlobalDraftKey(v string) ClientParams {
