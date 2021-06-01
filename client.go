@@ -6,9 +6,6 @@ import (
 	"net/http"
 )
 
-type HttpResponse *http.Request
-type HttpRequest *http.Request
-
 type Client struct {
 	serviceDomain  string
 	apiKey         string
@@ -84,12 +81,6 @@ func parseBody(res *http.Response, v interface{}) error {
 	return decoder.Decode(v)
 }
 
-func GlobalDraftKey(v string) ClientParams {
-	return func(c *Client) {
-		c.globalDraftKey = v
-	}
-}
-
 func createUrl(serviceDomain, endpoint, contentId string) string {
 	base := fmt.Sprintf("https://%s.%s/api/%s/%s", serviceDomain, BASE_DOMAIN, API_VERSION, endpoint)
 	if contentId != "" {
@@ -98,6 +89,12 @@ func createUrl(serviceDomain, endpoint, contentId string) string {
 	}
 
 	return base
+}
+
+func GlobalDraftKey(v string) ClientParams {
+	return func(c *Client) {
+		c.globalDraftKey = v
+	}
 }
 
 func ContentId(v string) RequestParams {
