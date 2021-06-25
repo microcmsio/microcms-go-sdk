@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/wantainc/microcms-go-sdk"
+	"github.com/microcmsio/microcms-go-sdk"
 )
 
 func main() {
