@@ -9,7 +9,7 @@ It helps you to use microCMS from Golang applications.
 Install package.
 
 ```bash
-$ go get github.com/wantainc/microcms-go-sdk 
+$ go get github.com/microcmsio/microcms-go-sdk 
 ```
 
 ### How to use
@@ -21,7 +21,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/wantainc/microcms-go-sdk"
+	"github.com/microcmsio/microcms-go-sdk"
 )
 
 func main() {
