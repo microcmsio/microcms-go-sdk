@@ -27,7 +27,7 @@ import (
 func main() {
 	serviceDomain := "YOUR_DOMAIN" // YOUR_DOMAIN is the XXXX part of XXXX.microcms.io
 	apiKey := "YOUR_API_KEY"
-	globalDraftKey: "YOUR_GLOBAL_DRAFT_KEY", // If need 
+	globalDraftKey := "YOUR_GLOBAL_DRAFT_KEY" // If need 
 
 	// If you specify globalDraftKey, please use microcms.GlobalDraftKey
 	c := microcms.CreateClient(serviceDomain, apiKey, microcms.GlobalDraftKey(globalDraftKey))
