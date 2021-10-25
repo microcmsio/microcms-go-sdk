@@ -17,7 +17,7 @@ type Client struct {
 type ClientParams func(*Client)
 
 type Params struct {
-	contentId string
+	contentID string
 	draftKey  string
 	limit     int
 	offset    int
@@ -93,8 +93,8 @@ func parseBody(res *http.Response, v interface{}) error {
 func createUrl(serviceDomain, endpoint string, p *Params) string {
 	base := fmt.Sprintf("https://%s.%s/api/%s/%s", serviceDomain, BASE_DOMAIN, API_VERSION, endpoint)
 
-	if p.contentId != "" {
-		base = fmt.Sprintf("%s/%s", base, p.contentId)
+	if p.contentID != "" {
+		base = fmt.Sprintf("%s/%s", base, p.contentID)
 	}
 
 	urlValues := url.Values{}
@@ -139,9 +139,9 @@ func GlobalDraftKey(v string) ClientParams {
 	}
 }
 
-func ContentId(v string) RequestParams {
+func ContentID(v string) RequestParams {
 	return func(p *Params) {
-		p.contentId = v
+		p.contentID = v
 	}
 }
 
