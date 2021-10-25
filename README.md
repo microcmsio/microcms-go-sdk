@@ -40,5 +40,5 @@ After, How to use it below.
 	endpoint := "endpoint"
 	contenttId := "contenttId" 
 
-	data, _ := c.Get(endpoint, microcms.ContentId(contentId))
+	data, _ := c.Get(endpoint, microcms.ContentID(contentId))
 ```
