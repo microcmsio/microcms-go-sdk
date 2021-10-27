@@ -9,12 +9,9 @@ import (
 )
 
 type Client struct {
-	serviceDomain  string
-	apiKey         string
-	globalDraftKey string
+	serviceDomain string
+	apiKey        string
 }
-
-type ClientParams func(*Client)
 
 type Params struct {
 	contentID string
@@ -31,14 +28,10 @@ type Params struct {
 
 type RequestParams func(*Params)
 
-func CreateClient(serviceDomain, apiKey string, params ...ClientParams) *Client {
+func CreateClient(serviceDomain, apiKey string) *Client {
 	c := &Client{
-		serviceDomain:  serviceDomain,
-		apiKey:         apiKey,
-		globalDraftKey: "",
-	}
-	for _, param := range params {
-		param(c)
+		serviceDomain: serviceDomain,
+		apiKey:        apiKey,
 	}
 	return c
 }
@@ -51,11 +44,7 @@ func (c *Client) makeRequest(method, endpoint string, p *Params) (*http.Request,
 		return nil, err
 	}
 
-	req.Header.Set("X-API-KEY", c.apiKey)
-
-	if c.globalDraftKey != "" {
-		req.Header.Set("X-GLOBAL-DRAFT-KEY", c.globalDraftKey)
-	}
+	req.Header.Set("X-MICROCMS-API-KEY", c.apiKey)
 
 	return req, nil
 }
@@ -130,12 +119,6 @@ func createUrl(serviceDomain, endpoint string, p *Params) string {
 	}
 
 	return base
-}
-
-func GlobalDraftKey(v string) ClientParams {
-	return func(c *Client) {
-		c.globalDraftKey = v
-	}
 }
 
 func ContentID(v string) RequestParams {

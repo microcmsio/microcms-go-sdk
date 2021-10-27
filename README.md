@@ -38,16 +38,13 @@ func main() {
 	globalDraftKey := "YOUR_GLOBAL_DRAFT_KEY" // If need 
 
 	// First, create client.
-
-	// If you specify globalDraftKey, please use microcms.GlobalDraftKey
-	c := microcms.CreateClient(serviceDomain, apiKey, microcms.GlobalDraftKey(globalDraftKey))
+	c := microcms.CreateClient(serviceDomain, apiKey)
 
 	// After, How to use it below.
-
 	endpoint := "endpoint"
 	contenttId := "contenttId"
 	data := new(Content)
-
+	
 	_ = c.Get(endpoint, data, microcms.ContentID(contentId))
 
 	fmt.Printf("%+v\n", response)
