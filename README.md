@@ -48,7 +48,7 @@ func main() {
 	contenttId := "contenttId"
 	data := new(Content)
 
-	_ = c.Get(endpoint, data, microcms.ContentId(contentId))
+	_ = c.Get(endpoint, data, microcms.ContentID(contentId))
 
 	fmt.Printf("%+v\n", response)
 }
