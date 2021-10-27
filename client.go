@@ -51,31 +51,26 @@ func (c *Client) makeRequest(method, endpoint string, p *Params) (*http.Request,
 
 func (c *Client) Get(endpoint string, data interface{}, params ...RequestParams) error {
 	p := &Params{}
-
 	for _, params := range params {
 		params(p)
 	}
 
 	req, err := c.makeRequest(http.MethodGet, endpoint, p)
-	res, _ := http.DefaultClient.Do(req)
-
 	if err != nil {
 		return err
 	}
 
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
 	defer res.Body.Close()
 
-	if err := parseBody(res, &data); err != nil {
+	if err := json.NewDecoder(res.Body).Decode(&data); err != nil {
 		return err
 	}
 
 	return err
-}
-
-func parseBody(res *http.Response, v interface{}) error {
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
-	return decoder.Decode(v)
 }
 
 func createURL(serviceDomain, endpoint string, p *Params) string {
