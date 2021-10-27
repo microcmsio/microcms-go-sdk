@@ -60,7 +60,7 @@ func (c *Client) makeRequest(method, endpoint string, p *Params) (*http.Request,
 	return req, nil
 }
 
-func (c *Client) Get(endpoint string, params ...RequestParams) (interface{}, error) {
+func (c *Client) Get(endpoint string, data interface{}, params ...RequestParams) error {
 	p := &Params{}
 
 	for _, params := range params {
@@ -71,17 +71,16 @@ func (c *Client) Get(endpoint string, params ...RequestParams) (interface{}, err
 	res, _ := http.DefaultClient.Do(req)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	defer res.Body.Close()
 
-	var data interface{}
 	if err := parseBody(res, &data); err != nil {
-		return nil, err
+		return err
 	}
 
-	return data, err
+	return err
 }
 
 func parseBody(res *http.Response, v interface{}) error {

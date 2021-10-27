@@ -14,8 +14,6 @@ $ go get github.com/microcmsio/microcms-go-sdk
 
 ### How to use
 
-First, create client.
-
 ```go
 package main
 
@@ -24,21 +22,34 @@ import (
 	"github.com/microcmsio/microcms-go-sdk"
 )
 
+type Content struct {
+	ID          string
+	Title       string
+	Body        string
+	CreatedAt   time.Date
+	UpdatedAt   time.Date
+	PublishedAt *time.Date
+	RevisedAt   *time.Date
+}
+
 func main() {
 	serviceDomain := "YOUR_DOMAIN" // YOUR_DOMAIN is the XXXX part of XXXX.microcms.io
 	apiKey := "YOUR_API_KEY"
 	globalDraftKey := "YOUR_GLOBAL_DRAFT_KEY" // If need 
 
+	// First, create client.
+
 	// If you specify globalDraftKey, please use microcms.GlobalDraftKey
 	c := microcms.CreateClient(serviceDomain, apiKey, microcms.GlobalDraftKey(globalDraftKey))
-}
-```
 
-After, How to use it below.
+	// After, How to use it below.
 
-```go
 	endpoint := "endpoint"
-	contenttId := "contenttId" 
+	contenttId := "contenttId"
+	data := new(Content)
 
-	data, _ := c.Get(endpoint, microcms.ContentId(contentId))
+	_ = c.Get(endpoint, data, microcms.ContentId(contentId))
+
+	fmt.Printf("%+v\n", response)
+}
 ```
