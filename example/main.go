@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/microcmsio/microcms-go-sdk"
+	"github.com/microcmsio/microcms-go-sdk/v0"
 )
 
 type ContentBase struct {
