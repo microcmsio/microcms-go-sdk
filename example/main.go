@@ -37,7 +37,9 @@ func main() {
 
 	c := microcms.CreateClient(serviceDomain, apiKey)
 	data := new(BlogList)
-	_ = c.Get("endpoint", data)
+	if err := c.Get("endpoint", data); err != nil {
+		panic(err)
+	}
 
 	fmt.Printf("%+v\n", data)
 }
