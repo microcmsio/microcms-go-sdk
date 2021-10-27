@@ -37,7 +37,7 @@ func CreateClient(serviceDomain, apiKey string) *Client {
 }
 
 func (c *Client) makeRequest(method, endpoint string, p *Params) (*http.Request, error) {
-	url := createUrl(c.serviceDomain, endpoint, p)
+	url := createURL(c.serviceDomain, endpoint, p)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -78,7 +78,7 @@ func parseBody(res *http.Response, v interface{}) error {
 	return decoder.Decode(v)
 }
 
-func createUrl(serviceDomain, endpoint string, p *Params) string {
+func createURL(serviceDomain, endpoint string, p *Params) string {
 	base := fmt.Sprintf("https://%s.%s/api/%s/%s", serviceDomain, BaseDomain, APIVersion, endpoint)
 
 	if p.contentID != "" {
