@@ -35,10 +35,10 @@ type YourContent struct {
 	ID          string     `json:"id,omitempty"`
 	Title       string     `json:"title,omitempty"`
 	Body        string     `json:"body,omitempty"`
-	CreatedAt   time.Date  `json:"createdAt,omitempty"`
-	UpdatedAt   time.Date  `json:"updatedAt,omitempty"`
-	PublishedAt *time.Date `json:"publishedAt,omitempty"`
-	RevisedAt   *time.Date `json:"revisedAt,omitempty"`
+	CreatedAt   time.Time  `json:"createdAt,omitempty"`
+	UpdatedAt   time.Time  `json:"updatedAt,omitempty"`
+	PublishedAt *time.Time `json:"publishedAt,omitempty"`
+	RevisedAt   *time.Time `json:"revisedAt,omitempty"`
 }
 
 type YourContentList struct {
