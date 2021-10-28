@@ -29,7 +29,7 @@ func New(serviceDomain, apiKey string) *Client {
 	return c
 }
 
-func (c *Client) SetHTTPClient(client *http.Client) {
+func (c *Client) SetHTTPClient(client httpClient) {
 	c.httpClient = client
 }
 
