@@ -9,7 +9,7 @@ It helps you to use microCMS from Golang applications.
 Install package.
 
 ```bash
-$ go get github.com/microcmsio/microcms-go-sdk/v0
+$ go get github.com/microcmsio/microcms-go-sdk
 ```
 
 ### How to use
@@ -17,7 +17,7 @@ $ go get github.com/microcmsio/microcms-go-sdk/v0
 #### Import
 
 ```go
-import "github.com/microcmsio/microcms-go-sdk/v0"
+import "github.com/microcmsio/microcms-go-sdk"
 ```
 
 #### Create client object

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/microcmsio/microcms-go-sdk/v0"
+	"github.com/microcmsio/microcms-go-sdk"
 )
 
 type Blog struct {

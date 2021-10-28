@@ -1,4 +1,4 @@
-module github.com/microcmsio/microcms-go-sdk/v0
+module github.com/microcmsio/microcms-go-sdk
 
 go 1.17
 
