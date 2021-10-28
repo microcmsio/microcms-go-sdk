@@ -2,6 +2,7 @@ package microcms
 
 // Base API endpoint
 const (
-	BaseDomain = "microcms.io"
-	APIVersion = "v1"
+	BaseDomain  = "microcms.io"
+	APIVersion  = "v1"
+	StatusDraft = "draft"
 )

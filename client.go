@@ -1,177 +1,85 @@
 package microcms
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 )
 
+type httpClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
 type Client struct {
 	serviceDomain string
 	apiKey        string
+	httpClient    httpClient
 }
 
-type Params struct {
-	contentID string
-	draftKey  string
-	limit     int
-	offset    int
-	orders    []string
-	q         string
-	fields    []string
-	ids       []string
-	filters   string
-	depth     int
-}
-
-type RequestParams func(*Params)
-
-func CreateClient(serviceDomain, apiKey string) *Client {
+func New(serviceDomain, apiKey string) *Client {
 	c := &Client{
 		serviceDomain: serviceDomain,
 		apiKey:        apiKey,
+		httpClient:    http.DefaultClient,
 	}
 	return c
 }
 
-func (c *Client) makeRequest(method, endpoint string, p *Params) (*http.Request, error) {
-	url := createURL(c.serviceDomain, endpoint, p)
+func (c *Client) SetHTTPClient(client *http.Client) {
+	c.httpClient = client
+}
 
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+func makeRequest(c *Client, method, endpoint string, query url.Values, data interface{}) (*http.Request, error) {
+	url := fmt.Sprintf("https://%s.%s/api/%s/%s", c.serviceDomain, BaseDomain, APIVersion, endpoint)
+	if len(query) > 0 {
+		url = fmt.Sprintf("%s?%s", url, query.Encode())
+	}
+
+	buf := new(bytes.Buffer)
+	if data != nil {
+		if err := json.NewEncoder(buf).Encode(data); err != nil {
+			return nil, err
+		}
+	}
+
+	req, err := http.NewRequest(method, url, buf)
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Set("X-MICROCMS-API-KEY", c.apiKey)
 
+	if data != nil {
+		req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	}
+
 	return req, nil
 }
 
-func (c *Client) Get(endpoint string, data interface{}, params ...RequestParams) error {
-	p := &Params{}
-	for _, params := range params {
-		params(p)
-	}
-
-	req, err := c.makeRequest(http.MethodGet, endpoint, p)
-	if err != nil {
-		return err
-	}
-
-	res, err := http.DefaultClient.Do(req)
+func sendRequest(c *Client, req *http.Request, data interface{}) error {
+	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return err
 	}
 	defer res.Body.Close()
 
-	if err := json.NewDecoder(res.Body).Decode(&data); err != nil {
-		return err
+	if res.StatusCode >= 400 {
+		errorMessage, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return fmt.Errorf("microCMS connection error: %w", err)
+		}
+		return fmt.Errorf("microCMS response error: %s", errorMessage)
 	}
 
-	return err
-}
-
-func createURL(serviceDomain, endpoint string, p *Params) string {
-	base := fmt.Sprintf("https://%s.%s/api/%s/%s", serviceDomain, BaseDomain, APIVersion, endpoint)
-
-	if p.contentID != "" {
-		base = fmt.Sprintf("%s/%s", base, p.contentID)
+	if strings.Contains(res.Header.Get("Content-Type"), "application/json") {
+		if err := json.NewDecoder(res.Body).Decode(data); err != nil {
+			return err
+		}
 	}
 
-	urlValues := url.Values{}
-	if len(p.draftKey) > 0 {
-		urlValues.Set("draftKey", p.draftKey)
-	}
-	if p.limit != 0 {
-		urlValues.Set("limit", fmt.Sprint(p.limit))
-	}
-	if p.offset != 0 {
-		urlValues.Set("offset", fmt.Sprint(p.offset))
-	}
-	if len(p.orders) > 0 {
-		urlValues.Set("orders", strings.Join(p.orders, ","))
-	}
-	if len(p.q) > 0 {
-		urlValues.Set("q", p.q)
-	}
-	if len(p.fields) > 0 {
-		urlValues.Set("fields", strings.Join(p.fields, ","))
-	}
-	if len(p.ids) > 0 {
-		urlValues.Set("ids", strings.Join(p.ids, ","))
-	}
-	if len(p.filters) > 0 {
-		urlValues.Set("filters", p.filters)
-	}
-	if p.depth != 0 {
-		urlValues.Set("depth", fmt.Sprint(p.depth))
-	}
-
-	if len(urlValues) > 0 {
-		base = fmt.Sprintf("%s?%s", base, urlValues.Encode())
-	}
-
-	return base
-}
-
-func ContentID(v string) RequestParams {
-	return func(p *Params) {
-		p.contentID = v
-	}
-}
-
-func DraftKey(v string) RequestParams {
-	return func(p *Params) {
-		p.draftKey = v
-	}
-}
-
-func Limit(v int) RequestParams {
-	return func(p *Params) {
-		p.limit = v
-	}
-}
-
-func Offset(v int) RequestParams {
-	return func(p *Params) {
-		p.offset = v
-	}
-}
-
-func Orders(v []string) RequestParams {
-	return func(p *Params) {
-		p.orders = v
-	}
-}
-
-func Q(v string) RequestParams {
-	return func(p *Params) {
-		p.q = v
-	}
-}
-
-func Fields(v []string) RequestParams {
-	return func(p *Params) {
-		p.fields = v
-	}
-}
-
-func IDs(ids []string) RequestParams {
-	return func(p *Params) {
-		p.ids = ids
-	}
-}
-
-func Filters(v string) RequestParams {
-	return func(p *Params) {
-		p.filters = v
-	}
-}
-
-func Depth(v int) RequestParams {
-	return func(p *Params) {
-		p.depth = v
-	}
+	return nil
 }
