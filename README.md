@@ -14,14 +14,23 @@ $ go get github.com/microcmsio/microcms-go-sdk/v0
 
 ### How to use
 
+#### Import
+
 ```go
-package main
+import "github.com/microcmsio/microcms-go-sdk/v0"
+```
 
-import (
-	"fmt"
-	"github.com/microcmsio/microcms-go-sdk/v0"
-)
+#### Create client object
 
+```go
+serviceDomain := "YOUR_DOMAIN" // YOUR_DOMAIN is the XXXX part of XXXX.microcms.io
+apiKey := "YOUR_API_KEY"
+client := microcms.New(serviceDomain, apiKey)
+```
+
+#### Example content definition
+
+```go
 type YourContent struct {
 	ID          string     `json:"id,omitempty"`
 	Title       string     `json:"title,omitempty"`
@@ -38,65 +47,80 @@ type YourContentList struct {
 	Limit      int
 	Offset     int
 }
+```
 
-func main() {
-	serviceDomain := "YOUR_DOMAIN" // YOUR_DOMAIN is the XXXX part of XXXX.microcms.io
-	apiKey := "YOUR_API_KEY"
-	
-	var list YourContentList
-	err := client.List(
-		microcms.ListParams{
-			Endpoint: "endpoint",
-			DraftKey: "abcd",                                 // Optional
-			Limit:    100,                                    // Optional
-			Offset:   1,                                      // Optional
-			Orders:   []string{"createdAt"},                  // Optional
-			Q:        "Hello",                                // Optional
-			Fields:   []string{"id", "title"},                // Optional
-			IDs:      []string{"foo"},                        // Optional
-			Filters:  "publishedAt[greater_than]2021-01-01",  // Optional
-			Depth:    1,                                      // Optional
-		},
-		&list,
-	)
-	println(list.Contents[0].Title)
+#### Get content list
 
-	var content YourContent
-	err := client.Get(
-		microcms.GetParams{
-			Endpoint:  "endpoint",
-			ContentID: "my-content-id",
-			DraftKey:  "abcd",                   // Optional
-			Fields:    []string{"id", "title"},  // Optional
-			Depth:     1,                        // Optional
-		},
-		&content,
-	)
-	println(content.Title)
+```go
+var list YourContentList
+err := client.List(
+	microcms.ListParams{
+		Endpoint: "endpoint",
+		DraftKey: "abcd",                                 // Optional
+		Limit:    100,                                    // Optional
+		Offset:   1,                                      // Optional
+		Orders:   []string{"createdAt"},                  // Optional
+		Q:        "Hello",                                // Optional
+		Fields:   []string{"id", "title"},                // Optional
+		IDs:      []string{"foo"},                        // Optional
+		Filters:  "publishedAt[greater_than]2021-01-01",  // Optional
+		Depth:    1,                                      // Optional
+	},
+	&list,
+)
+println(list.Contents[0].Title)
+```
 
-	createResult, err := client.Create(microcms.CreateParams{
-		Endpoint:  "endpoint",
-		ContentID: "draft-content-id",    // Optional
-		Status:    microcms.StatusDraft,  // Optional
-		Content: YourContent{
-			Title: "draft-content",
-			Body:  "Hello, draft content!",
-		},
-	})
-	println(createResult.ID)
+#### Get single content
 
-	updateResult, err := client.Update(microcms.UpdateParams{
-		Endpoint:  "endpoint",
-		ContentID: postResult.ID,
-		Content: YourContent{
-			Body: "Hello, new content!",
-		},
-	})
-	println(updateResult.ID)
-
-	err := client.Delete(microcms.DeleteParams{
+```go
+var content YourContent
+err := client.Get(
+	microcms.GetParams{
 		Endpoint:  "endpoint",
 		ContentID: "my-content-id",
-	})
-}
+		DraftKey:  "abcd",                   // Optional
+		Fields:    []string{"id", "title"},  // Optional
+		Depth:     1,                        // Optional
+	},
+	&content,
+)
+println(content.Title)
+```
+
+#### Create content
+
+```go
+createResult, err := client.Create(microcms.CreateParams{
+	Endpoint:  "endpoint",
+	ContentID: "draft-content-id",    // Optional
+	Status:    microcms.StatusDraft,  // Optional
+	Content: YourContent{
+		Title: "draft-content",
+		Body:  "Hello, draft content!",
+	},
+})
+println(createResult.ID)
+```
+
+#### Update content
+
+```go
+updateResult, err := client.Update(microcms.UpdateParams{
+	Endpoint:  "endpoint",
+	ContentID: postResult.ID,
+	Content: YourContent{
+		Body: "Hello, new content!",
+	},
+})
+println(updateResult.ID)
+```
+
+#### Delete
+
+```go
+err := client.Delete(microcms.DeleteParams{
+	Endpoint:  "endpoint",
+	ContentID: "my-content-id",
+})
 ```
