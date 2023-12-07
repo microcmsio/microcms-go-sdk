@@ -72,7 +72,10 @@ func sendRequest(c *Client, req *http.Request, data interface{}) error {
 		if err != nil {
 			return fmt.Errorf("microCMS connection error: %w", err)
 		}
-		return fmt.Errorf("microCMS response error: %s", errorMessage)
+		return &HttpResponseError{
+			Response:     res,
+			ErrorMessage: string(errorMessage),
+		}
 	}
 
 	if strings.Contains(res.Header.Get("Content-Type"), "application/json") {
@@ -82,4 +85,13 @@ func sendRequest(c *Client, req *http.Request, data interface{}) error {
 	}
 
 	return nil
+}
+
+type HttpResponseError struct {
+	Response     *http.Response
+	ErrorMessage string
+}
+
+func (r *HttpResponseError) Error() string {
+	return fmt.Sprintf("response error: StatusCode=%d %s", r.Response.StatusCode, r.ErrorMessage)
 }
