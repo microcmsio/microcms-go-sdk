@@ -203,3 +203,16 @@ err := client.Delete(microcms.DeleteParams{
 	ContentID: "my-content-id",
 })
 ```
+
+### Error Handling
+
+```go
+data, err := client.Get(ctx, "endpoint", nil)
+if err != nil {
+    if httpErr, ok := err.(*sdk.HttpResponseError); ok {
+        fmt.Printf("HTTP Status Code: %d\n", httpErr.Response.StatusCode)
+        fmt.Printf("Error Message: %s\n", httpErr.ErrorMessage)
+    }
+    return
+}
+```
