@@ -65,7 +65,7 @@ func sendRequest(c *Client, req *http.Request, data interface{}) error {
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer res.Body.Close() //nolint:errcheck
 
 	if res.StatusCode >= 400 {
 		errorMessage, err := ioutil.ReadAll(res.Body)
