@@ -2,7 +2,11 @@ name: Go
 
 on:
   push:
-    branches: [main]
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches: [main]
 
