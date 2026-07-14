@@ -1,34 +1,40 @@
 # microCMS Go SDK
 
-[microCMS](https://document.microcms.io/manual/api-request) Go SDK.
+[microCMS](https://document.microcms.io/) のGo SDKです。
 
-## Tutorial
+## 保守方針
 
-See [official tutorial](https://document.microcms.io/tutorial/go/go-top).
+このSDKの現在の保守レベルは `Maintenance` です。
 
-## Installation
+詳細は[SDKの保守方針](https://document.microcms.io/manual/limitations#hc2b0bc6659)をご覧ください。
+
+## チュートリアル
+
+[公式チュートリアル](https://document.microcms.io/tutorial/go/go-top)をご覧ください。
+
+## インストール
 
 ```sh
 $ go get github.com/microcmsio/microcms-go-sdk
 ```
 
-## Usage
+## 使い方
 
-### Import
+### インポート
 
 ```go
 import "github.com/microcmsio/microcms-go-sdk"
 ```
 
-### Create client object
+### クライアントオブジェクトの作成
 
 ```go
-serviceDomain := "YOUR_DOMAIN" // YOUR_DOMAIN is the XXXX part of XXXX.microcms.io
+serviceDomain := "YOUR_DOMAIN" // YOUR_DOMAINはXXXX.microcms.ioのXXXXの部分です
 apiKey := "YOUR_API_KEY"
 client := microcms.New(serviceDomain, apiKey)
 ```
 
-### Example content definition
+### コンテンツ定義の例
 
 ```go
 type YourContent struct {
@@ -49,7 +55,7 @@ type YourContentList struct {
 }
 ```
 
-### Get content list
+### コンテンツ一覧の取得
 
 ```go
 var list YourContentList
@@ -62,7 +68,7 @@ err := client.List(
 println(list.Contents[0].Title)
 ```
 
-### Get content list with parameters
+### パラメータを指定したコンテンツ一覧の取得
 
 ```go
 var list YourContentList
@@ -73,7 +79,7 @@ err := client.List(
 		Limit:    100,
 		Offset:   1,
 		Orders:   []string{"createdAt"},
-		Q:        "Hello",
+		Q:        "こんにちは",
 		Fields:   []string{"id", "title"},
 		IDs:      []string{"foo"},
 		Filters:  "publishedAt[greater_than]2021-01-01",
@@ -84,7 +90,7 @@ err := client.List(
 println(list.Contents[0].Title)
 ```
 
-### Get single content
+### 単一コンテンツの取得
 
 ```go
 var content YourContent
@@ -98,7 +104,7 @@ err := client.Get(
 println(content.Title)
 ```
 
-### Get single content with parameters
+### パラメータを指定した単一コンテンツの取得
 
 ```go
 var content YourContent
@@ -115,7 +121,7 @@ err := client.Get(
 println(content.Title)
 ```
 
-### Get object form content
+### オブジェクト形式のコンテンツの取得
 
 ```go
 var content YourContent
@@ -128,74 +134,74 @@ err := client.Get(
 println(content.Title)
 ```
 
-### Create content
+### コンテンツの作成
 
 ```go
 createResult, err := client.Create(microcms.CreateParams{
 	Endpoint: "endpoint",
 	Content:  YourContent{
-		Title: "content",
-		Body:  "Hello, content!",
+		Title: "コンテンツ",
+		Body:  "こんにちは、コンテンツ！",
 	},
 })
 println(createResult.ID)
 ```
 
-### Create content with specified ID
+### IDを指定したコンテンツの作成
 
 ```go
 createResult, err := client.Create(microcms.CreateParams{
 	Endpoint:  "endpoint",
 	ContentID: "my-content-id",
 	Content:   YourContent{
-		Title: "my content",
-		Body:  "Hello, my content!",
+		Title: "マイコンテンツ",
+		Body:  "こんにちは、マイコンテンツ！",
 	},
 })
 println(createResult.ID)
 ```
 
-### Create draft content
+### 下書きコンテンツの作成
 
 ```go
 createResult, err := client.Create(microcms.CreateParams{
 	Endpoint: "endpoint",
 	Status:   microcms.StatusDraft,
 	Content:  YourContent{
-		Title: "draft content",
-		Body:  "Hello, draft content!",
+		Title: "下書きコンテンツ",
+		Body:  "こんにちは、下書きコンテンツ！",
 	},
 })
 println(createResult.ID)
 ```
 
-### Update content
+### コンテンツの更新
 
 ```go
 updateResult, err := client.Update(microcms.UpdateParams{
 	Endpoint:  "endpoint",
 	ContentID: "my-content-id",
 	Content:   YourContent{
-		Body: "Hello, new content!",
+		Body: "こんにちは、新しいコンテンツ！",
 	},
 })
 println(updateResult.ID)
 ```
 
-### Update object form content
+### オブジェクト形式のコンテンツの更新
 
 ```go
 updateResult, err := client.Update(microcms.UpdateParams{
 	Endpoint:  "endpoint",
 	ContentID: "my-content-id",
 	Content:   YourContent{
-		Body: "Hello, new content!",
+		Body: "こんにちは、新しいコンテンツ！",
 	},
 })
 println(updateResult.ID)
 ```
 
-### Delete content
+### コンテンツの削除
 
 ```go
 err := client.Delete(microcms.DeleteParams{
@@ -204,14 +210,14 @@ err := client.Delete(microcms.DeleteParams{
 })
 ```
 
-### Error Handling
+### エラーハンドリング
 
 ```go
 data, err := client.Get(ctx, "endpoint", nil)
 if err != nil {
     if httpErr, ok := err.(*sdk.HttpResponseError); ok {
-        fmt.Printf("HTTP Status Code: %d\n", httpErr.Response.StatusCode)
-        fmt.Printf("Error Message: %s\n", httpErr.ErrorMessage)
+        fmt.Printf("HTTPステータスコード: %d\n", httpErr.Response.StatusCode)
+        fmt.Printf("エラーメッセージ: %s\n", httpErr.ErrorMessage)
     }
     return
 }
