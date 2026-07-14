@@ -1,6 +1,6 @@
 # microCMS Go SDK
 
-[microCMS](https://document.microcms.io/manual/api-request) のGo SDKです。
+[microCMS](https://document.microcms.io/) のGo SDKです。
 
 ## 保守方針
 
