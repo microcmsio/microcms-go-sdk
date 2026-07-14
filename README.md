@@ -6,7 +6,7 @@
 
 このSDKの現在の保守レベルは `Maintenance` です。
 
-詳細は[SDKの保守方針](https://document.microcms.io/manual/limitations)をご覧ください。
+詳細は[SDKの保守方針](https://document.microcms.io/manual/limitations#hc2b0bc6659)をご覧ください。
 
 ## チュートリアル
 
