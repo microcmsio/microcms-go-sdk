@@ -1,0 +1,19 @@
+{
+  "name": "microcms-go-sdk",
+  "image": "mcr.microsoft.com/devcontainers/go:1",
+  "features": {
+    "ghcr.io/devcontainers/features/go:1": {
+      "version": "none",
+      "golangciLintVersion": "2.13.2"
+    }
+  },
+  "postCreateCommand": "go mod download",
+  "customizations": {
+    "vscode": {
+      "extensions": ["golang.go"],
+      "settings": {
+        "go.lintTool": "golangci-lint"
+      }
+    }
+  }
+}
