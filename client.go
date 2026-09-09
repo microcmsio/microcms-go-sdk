@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -68,7 +68,7 @@ func sendRequest(c *Client, req *http.Request, data interface{}) error {
 	defer res.Body.Close() //nolint:errcheck
 
 	if res.StatusCode >= 400 {
-		errorMessage, err := ioutil.ReadAll(res.Body)
+		errorMessage, err := io.ReadAll(res.Body)
 		if err != nil {
 			return fmt.Errorf("microCMS connection error: %w", err)
 		}
