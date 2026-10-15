@@ -4,7 +4,7 @@
   "features": {
     "ghcr.io/devcontainers/features/go:1": {
       "version": "none",
-      "golangciLintVersion": "2.13.2"
+      "golangciLintVersion": "2.14.0"
     }
   },
   "postCreateCommand": "go mod download",
