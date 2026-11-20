@@ -33,10 +33,49 @@ func (c *Client) SetHTTPClient(client httpClient) {
 	c.httpClient = client
 }
 
-func makeRequest(c *Client, method, endpoint string, query url.Values, data interface{}) (*http.Request, error) {
-	url := fmt.Sprintf("https://%s.%s/api/%s/%s", c.serviceDomain, BaseDomain, APIVersion, endpoint)
-	if len(query) > 0 {
-		url = fmt.Sprintf("%s?%s", url, query.Encode())
+func validatePathSegment(name, segment string) error {
+	// Also check every percent-decoded form, so a server or proxy that decodes
+	// the path (possibly more than once) cannot turn the segment into a climb.
+	v := segment
+	for {
+		if v == "" || v == "." || v == ".." || strings.ContainsAny(v, `/\`) {
+			return fmt.Errorf("microcms: invalid %s %q", name, segment)
+		}
+		unescaped, err := url.PathUnescape(v)
+		if err != nil || unescaped == v {
+			return nil
+		}
+		v = unescaped
+	}
+}
+
+// makeRequest builds a request to /api/{APIVersion}/{endpoint}[/{contentID}].
+// Each identifier is sent as exactly one percent-encoded path segment.
+// An empty contentID omits that segment.
+func makeRequest(c *Client, method, endpoint, contentID string, query url.Values, data interface{}) (*http.Request, error) {
+	if err := validatePathSegment("endpoint", endpoint); err != nil {
+		return nil, err
+	}
+	segments := []string{"api", APIVersion, endpoint}
+	if contentID != "" {
+		if err := validatePathSegment("content ID", contentID); err != nil {
+			return nil, err
+		}
+		segments = append(segments, contentID)
+	}
+
+	escaped := make([]string, len(segments))
+	for i, s := range segments {
+		escaped[i] = url.PathEscape(s)
+	}
+
+	host := fmt.Sprintf("%s.%s", c.serviceDomain, BaseDomain)
+	u := &url.URL{
+		Scheme:   "https",
+		Host:     host,
+		Path:     "/" + strings.Join(segments, "/"),
+		RawPath:  "/" + strings.Join(escaped, "/"),
+		RawQuery: query.Encode(),
 	}
 
 	buf := new(bytes.Buffer)
@@ -46,9 +85,12 @@ func makeRequest(c *Client, method, endpoint string, query url.Values, data inte
 		}
 	}
 
-	req, err := http.NewRequest(method, url, buf)
+	req, err := http.NewRequest(method, u.String(), buf)
 	if err != nil {
 		return nil, err
+	}
+	if req.URL.Host != host || req.URL.EscapedPath() != u.EscapedPath() || req.URL.RawQuery != u.RawQuery || req.URL.Fragment != "" {
+		return nil, fmt.Errorf("microcms: invalid service domain %q", c.serviceDomain)
 	}
 
 	req.Header.Set("X-MICROCMS-API-KEY", c.apiKey)

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"path"
 	"strings"
 )
 
@@ -30,7 +29,7 @@ type GetParams struct {
 }
 
 func (c *Client) List(p ListParams, data interface{}) error {
-	req, err := makeRequest(c, http.MethodGet, p.Endpoint, makeListQuery(p), nil)
+	req, err := makeRequest(c, http.MethodGet, p.Endpoint, "", makeListQuery(p), nil)
 	if err != nil {
 		return err
 	}
@@ -43,7 +42,7 @@ func (c *Client) List(p ListParams, data interface{}) error {
 }
 
 func (c *Client) Get(p GetParams, data interface{}) error {
-	req, err := makeRequest(c, http.MethodGet, path.Join(p.Endpoint, p.ContentID), makeGetQuery(p), nil)
+	req, err := makeRequest(c, http.MethodGet, p.Endpoint, p.ContentID, makeGetQuery(p), nil)
 	if err != nil {
 		return err
 	}
