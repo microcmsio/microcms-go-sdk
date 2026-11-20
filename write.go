@@ -3,7 +3,6 @@ package microcms
 import (
 	"net/http"
 	"net/url"
-	"path"
 )
 
 type CreateParams struct {
@@ -33,16 +32,12 @@ type UpdateResponse struct {
 }
 
 func (c *Client) Create(p CreateParams) (*CreateResponse, error) {
-	var reqMethod, reqPath string
+	reqMethod := http.MethodPost
 	if len(p.ContentID) > 0 {
 		reqMethod = http.MethodPut
-		reqPath = path.Join(p.Endpoint, p.ContentID)
-	} else {
-		reqMethod = http.MethodPost
-		reqPath = p.Endpoint
 	}
 
-	req, err := makeRequest(c, reqMethod, reqPath, makeCreateQuery(p), p.Content)
+	req, err := makeRequest(c, reqMethod, p.Endpoint, p.ContentID, makeCreateQuery(p), p.Content)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +51,7 @@ func (c *Client) Create(p CreateParams) (*CreateResponse, error) {
 }
 
 func (c *Client) Update(p UpdateParams) (*UpdateResponse, error) {
-	req, err := makeRequest(c, http.MethodPatch, path.Join(p.Endpoint, p.ContentID), url.Values{}, p.Content)
+	req, err := makeRequest(c, http.MethodPatch, p.Endpoint, p.ContentID, url.Values{}, p.Content)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +65,7 @@ func (c *Client) Update(p UpdateParams) (*UpdateResponse, error) {
 }
 
 func (c *Client) Delete(p DeleteParams) error {
-	req, err := makeRequest(c, http.MethodDelete, path.Join(p.Endpoint, p.ContentID), url.Values{}, nil)
+	req, err := makeRequest(c, http.MethodDelete, p.Endpoint, p.ContentID, url.Values{}, nil)
 	if err != nil {
 		return err
 	}
